@@ -7,7 +7,7 @@
     "start": "tsc && node dist/app.js",
     "dev": "tsx watch app.ts",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,8 @@
   "homepage": "https://github.com/Broskie67/gymAppBackend#readme",
   "dependencies": {
     "dotenv": "^17.3.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "vitest": "^4.0.18"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
