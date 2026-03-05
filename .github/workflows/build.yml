@@ -1,0 +1,61 @@
+name: Build Artifact
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test --if-present
+
+      - name: Package build
+        run: |
+          mkdir -p artifact
+          cp -r dist artifact/dist
+          cp package.json artifact/package.json
+          if [ -f package-lock.json ]; then cp package-lock.json artifact/package-lock.json; fi
+          if [ -f yarn.lock ]; then cp yarn.lock artifact/yarn.lock; fi
+          if [ -f .npmrc ]; then cp .npmrc artifact/.npmrc; fi
+          if [ -d prisma ]; then cp -r prisma artifact/prisma; fi
+          if [ -d migrations ]; then cp -r migrations artifact/migrations; fi
+          if [ -f ecosystem.config.js ]; then cp ecosystem.config.js artifact/ecosystem.config.js; fi
+          cd artifact
+          zip -r ../backend-build.zip .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-build
+          path: backend-build.zip
+          if-no-files-found: error
