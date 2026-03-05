@@ -24,6 +24,10 @@ jobs:
       matrix:
         node: [20, 24]
 
+    defaults:
+      run:
+        working-directory: ./src/api
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,6 +37,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
+          cache-dependency-path: src/api/package-lock.json
 
       - name: Install dependencies
         run: npm ci
