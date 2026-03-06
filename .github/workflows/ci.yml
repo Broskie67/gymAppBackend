@@ -24,10 +24,6 @@ jobs:
       matrix:
         node: [20, 24]
 
-    defaults:
-      run:
-        working-directory: ./src/api
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
